@@ -150,7 +150,6 @@ def read_projects():
         return
     
     for proj in projects:
-
         dept_name = next((dept["nome"] for dept in departments if dept["id"] == proj["departamento_id"]), "Departamento não encontrado")
         print(f"ID: {proj['id']}, Nome: {proj['nome']}, Número: {proj['numero']}, Local: {proj['local']}, Departamento ID: {proj['departamento_id']}, Departamento: {dept_name}")
 
@@ -179,7 +178,6 @@ def update_department():
             numero = input(f"Novo número ({department['numero']}): ") or department["numero"]
             gerente_cpf = input(f"Novo CPF do gerente ({department['gerente_cpf']}): ") or department["gerente_cpf"]
 
-            # Atualiza os valores
             department["nome"] = nome
             department["numero"] = numero
             department["gerente_cpf"] = gerente_cpf
@@ -225,13 +223,11 @@ def update_employee():
             last_name = input(f"Novo último nome ({employee['ultimo_nome']}): ") or employee["ultimo_nome"]
             cpf = input(f"Novo CPF ({employee['cpf']}): ") or employee["cpf"]
             address = input(f"Novo endereço ({employee['endereco']}): ") or employee["endereco"]
-            salary = input(f"Novo salário ({employee['salario']}): ")
-            salary = float(salary) if salary else employee["salario"]
+            salary = float(input(f"Novo salário ({employee['salario']}): ") or employee["salario"])
             gender = input(f"Novo gênero ({employee['genero']}): ") or employee["genero"]
             birthday = input(f"Nova data de nascimento ({employee['data_nascimento']}): ") or employee["data_nascimento"]
-            department_id = input(f"Novo ID do departamento ({employee['departamento_id']}): ")
-            department_id = int(department_id) if department_id else employee["departamento_id"]
-            project_ids = input(f"Novos IDs de projetos (separados por vírgula, atual: {employee['projetos']}): ")
+            department_id = int(input(f"Novo ID do departamento ({employee['departamento_id']}): ") or employee["departamento_id"])
+            project_ids = input("Novos IDs dos projetos (separados por vírgula): ").split(",") or employee["projetos"]
 
             employee["primeiro_nome"] = first_name
             employee["inicial_meio"] = inicial_medium_name
@@ -242,8 +238,7 @@ def update_employee():
             employee["genero"] = gender
             employee["data_nascimento"] = birthday
             employee["departamento_id"] = department_id
-            if project_ids:
-                employee["projetos"] = [int(pid.strip()) for pid in project_ids.split(",")]
+            employee["projetos"] = [int(proj_id.strip()) for proj_id in project_ids]
 
             save_data(EMPLOYEES_FILE, employees)
             print("Funcionário atualizado com sucesso!")
@@ -251,49 +246,81 @@ def update_employee():
 
     print("Funcionário não encontrado.")
 
+def delete_department():
+    departments = load_data(DEPARTMENTS_FILE)
+    department_id = int(input("Digite o ID do departamento que deseja deletar: "))
+
+    departments = [department for department in departments if department["id"] != department_id]
+
+    save_data(DEPARTMENTS_FILE, departments)
+    print("Departamento deletado com sucesso!")
+
+def delete_project():
+    projects = load_data(PROJECTS_FILE)
+    project_id = int(input("Digite o ID do projeto que deseja deletar: "))
+
+    projects = [project for project in projects if project["id"] != project_id]
+
+    save_data(PROJECTS_FILE, projects)
+    print("Projeto deletado com sucesso!")
+
+def delete_employee():
+    employees = load_data(EMPLOYEES_FILE)
+    employee_id = int(input("Digite o ID do funcionário que deseja deletar: "))
+
+    employees = [employee for employee in employees if employee["id"] != employee_id]
+
+    save_data(EMPLOYEES_FILE, employees)
+    print("Funcionário deletado com sucesso!")
+
 def main():
     while True:
-        print("\nBem-vindo ao sistema de cadastro!\n")
-        print("1 - Criar Departamento")
-        print("2 - Criar Projeto")
-        print("3 - Criar Funcionário")
-        print("4 - Visualizar Departamentos")
-        print("5 - Visualizar Projetos")
-        print("6 - Visualizar Funcionários")
-        print("7 - Atualizar Departamento")
-        print("8 - Atualizar Projeto")
-        print("9 - Atualizar Funcionário")
-        opcao = input("Escolha uma opção: ")
-        
-        if opcao == "1":
-            create_department()
-        elif opcao == "2":
-            create_project()
-        elif opcao == "3":
-            create_employee()
-        elif opcao == "4":
-            read_departments()
-        elif opcao == "5":
-            read_projects()
-        elif opcao == "6":
-            read_employees()
-        elif opcao == "7":
-            update_department()
-        elif opcao == "8":
-            update_project()
-        elif opcao == "9":
-            update_employee()
-        else:
-            print("Opção inválida.")
+        print("\n1. Criar Departamento")
+        print("2. Criar Projeto")
+        print("3. Criar Funcionário")
+        print("4. Visualizar Departamentos")
+        print("5. Visualizar Projetos")
+        print("6. Visualizar Funcionários")
+        print("7. Atualizar Departamento")
+        print("8. Atualizar Projeto")
+        print("9. Atualizar Funcionário")
+        print("10. Deletar Departamento")
+        print("11. Deletar Projeto")
+        print("12. Deletar Funcionário")
+        print("0. Sair")
 
-        print("\nDeseja realizar outro cadastro?\n")
-        print("1 - Sim")
-        print("2 - Não")
-        continuar = input("Escolha uma opção: ")
-        
-        if continuar != "1":
-            print("Encerrando o sistema de cadastro.")
+        choice = input("Escolha uma opção: ")
+
+        if choice == "1":
+            create_department()
+        elif choice == "2":
+            create_project()
+        elif choice == "3":
+            create_employee()
+        elif choice == "4":
+            read_departments()
+        elif choice == "5":
+            read_projects()
+        elif choice == "6":
+            read_employees()
+        elif choice == "7":
+            update_department()
+        elif choice == "8":
+            update_project()
+        elif choice == "9":
+            update_employee()
+        elif choice == "10":
+            delete_department()
+        elif choice == "11":
+            delete_project()
+        elif choice == "12":
+            delete_employee()
+        elif choice == "0":
+            print("Saindo...")
             break
+        else:
+            print("Opção inválida. Tente novamente.")
 
 if __name__ == "__main__":
     main()
+
