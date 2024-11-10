@@ -129,12 +129,55 @@ def create_employee():
     save_data(EMPLOYEES_FILE, employees)
     print(f"\nFuncionário {first_name} {last_name} criado com sucesso!")
 
+def read_departments():
+    departments = load_data(DEPARTMENTS_FILE)
+    projects = load_data(PROJECTS_FILE)
+
+    if not departments:
+        print("Nenhum departamento encontrado.")
+        return
+    
+    for dept in departments:
+        project_names = [proj["nome"] for proj in projects if proj["id"] in dept["projetos"]]
+        print(f"ID: {dept['id']}, Nome: {dept['nome']}, Número: {dept['numero']}, Gerente CPF: {dept['gerente_cpf']}, Projetos: {project_names}")
+
+def read_projects():
+    projects = load_data(PROJECTS_FILE)
+    departments= load_data(DEPARTMENTS_FILE)
+
+    if not projects:
+        print("Nenhum projeto encontrado.")
+        return
+    
+    for proj in projects:
+
+        dept_name = next((dept["nome"] for dept in departments if dept["id"] == proj["departamento_id"]), "Departamento não encontrado")
+        print(f"ID: {proj['id']}, Nome: {proj['nome']}, Número: {proj['numero']}, Local: {proj['local']}, Departamento ID: {proj['departamento_id']}, Departamento: {dept_name}")
+
+def read_employees():
+    employees = load_data(EMPLOYEES_FILE)
+    departments = load_data(DEPARTMENTS_FILE)
+    projects = load_data(PROJECTS_FILE)
+
+    if not employees:
+        print("Nenhum funcionário encontrado.")
+        return
+    
+    for emp in employees:
+        dept_name = next((dept["nome"] for dept in departments if dept["id"] == emp["departamento_id"]), "Departamento não encontrado")
+        project_names = [proj["nome"] for proj in projects if proj["id"] in emp["projetos"]]
+        print(f"ID: {emp['id']}, Nome: {emp['primeiro_nome']} {emp['inicial_meio']} {emp['ultimo_nome']}, CPF: {emp['cpf']}, Endereço: {emp['endereco']}, Salário: {emp['salario']}, Gênero: {emp['genero']}, Nascimento: {emp['data_nascimento']}, Departamento: {dept_name}, Projetos: {project_names}")
+
+
 def main():
     while True:
         print("\nBem-vindo ao sistema de cadastro!\n")
         print("1 - Criar Departamento")
         print("2 - Criar Projeto")
         print("3 - Criar Funcionário")
+        print("4 - Visualizar Departamentos")
+        print("5 - Visualizar Projetos")
+        print("6 - Visualizar Funcionários")
         opcao = input("Escolha uma opção: ")
         
         if opcao == "1":
@@ -143,6 +186,12 @@ def main():
             create_project()
         elif opcao == "3":
             create_employee()
+        elif opcao == "4":
+            read_departments()
+        elif opcao == "5":
+            read_projects()
+        elif opcao == "6":
+            read_employees()
         else:
             print("Opção inválida.")
 
