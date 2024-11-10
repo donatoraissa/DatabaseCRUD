@@ -168,6 +168,88 @@ def read_employees():
         project_names = [proj["nome"] for proj in projects if proj["id"] in emp["projetos"]]
         print(f"ID: {emp['id']}, Nome: {emp['primeiro_nome']} {emp['inicial_meio']} {emp['ultimo_nome']}, CPF: {emp['cpf']}, Endereço: {emp['endereco']}, Salário: {emp['salario']}, Gênero: {emp['genero']}, Nascimento: {emp['data_nascimento']}, Departamento: {dept_name}, Projetos: {project_names}")
 
+def update_department():
+    departments = load_data(DEPARTMENTS_FILE)
+    department_id = int(input("Digite o ID do departamento que deseja atualizar: "))
+
+    for department in departments:
+        if department["id"] == department_id:
+            print(f"Atualizando o departamento: {department['nome']}")
+            nome = input(f"Novo nome ({department['nome']}): ") or department["nome"]
+            numero = input(f"Novo número ({department['numero']}): ") or department["numero"]
+            gerente_cpf = input(f"Novo CPF do gerente ({department['gerente_cpf']}): ") or department["gerente_cpf"]
+
+            # Atualiza os valores
+            department["nome"] = nome
+            department["numero"] = numero
+            department["gerente_cpf"] = gerente_cpf
+
+            save_data(DEPARTMENTS_FILE, departments)
+            print("Departamento atualizado com sucesso!")
+            return
+
+    print("Departamento não encontrado.")
+
+def update_project():
+    projects = load_data(PROJECTS_FILE)
+    project_id = int(input("Digite o ID do projeto que deseja atualizar: "))
+
+    for project in projects:
+        if project["id"] == project_id:
+            print(f"Atualizando o projeto: {project['nome']}")
+            nome = input(f"Novo nome ({project['nome']}): ") or project["nome"]
+            numero = input(f"Novo número ({project['numero']}): ") or project["numero"]
+            local = input(f"Novo local ({project['local']}): ") or project["local"]
+            department_id = int(input(f"Novo ID do departamento ({project['departamento_id']}): ") or project["departamento_id"])
+
+            project["nome"] = nome
+            project["numero"] = numero
+            project["local"] = local
+            project["departamento_id"] = department_id
+
+            save_data(PROJECTS_FILE, projects)
+            print("Projeto atualizado com sucesso!")
+            return
+
+    print("Projeto não encontrado.")
+
+def update_employee():
+    employees = load_data(EMPLOYEES_FILE)
+    employee_id = int(input("Digite o ID do funcionário que deseja atualizar: "))
+
+    for employee in employees:
+        if employee["id"] == employee_id:
+            print(f"Atualizando o funcionário: {employee['primeiro_nome']} {employee['ultimo_nome']}")
+            first_name = input(f"Novo primeiro nome ({employee['primeiro_nome']}): ") or employee["primeiro_nome"]
+            inicial_medium_name = input(f"Nova inicial do meio ({employee['inicial_meio']}): ") or employee["inicial_meio"]
+            last_name = input(f"Novo último nome ({employee['ultimo_nome']}): ") or employee["ultimo_nome"]
+            cpf = input(f"Novo CPF ({employee['cpf']}): ") or employee["cpf"]
+            address = input(f"Novo endereço ({employee['endereco']}): ") or employee["endereco"]
+            salary = input(f"Novo salário ({employee['salario']}): ")
+            salary = float(salary) if salary else employee["salario"]
+            gender = input(f"Novo gênero ({employee['genero']}): ") or employee["genero"]
+            birthday = input(f"Nova data de nascimento ({employee['data_nascimento']}): ") or employee["data_nascimento"]
+            department_id = input(f"Novo ID do departamento ({employee['departamento_id']}): ")
+            department_id = int(department_id) if department_id else employee["departamento_id"]
+            project_ids = input(f"Novos IDs de projetos (separados por vírgula, atual: {employee['projetos']}): ")
+
+            employee["primeiro_nome"] = first_name
+            employee["inicial_meio"] = inicial_medium_name
+            employee["ultimo_nome"] = last_name
+            employee["cpf"] = cpf
+            employee["endereco"] = address
+            employee["salario"] = salary
+            employee["genero"] = gender
+            employee["data_nascimento"] = birthday
+            employee["departamento_id"] = department_id
+            if project_ids:
+                employee["projetos"] = [int(pid.strip()) for pid in project_ids.split(",")]
+
+            save_data(EMPLOYEES_FILE, employees)
+            print("Funcionário atualizado com sucesso!")
+            return
+
+    print("Funcionário não encontrado.")
 
 def main():
     while True:
@@ -178,6 +260,9 @@ def main():
         print("4 - Visualizar Departamentos")
         print("5 - Visualizar Projetos")
         print("6 - Visualizar Funcionários")
+        print("7 - Atualizar Departamento")
+        print("8 - Atualizar Projeto")
+        print("9 - Atualizar Funcionário")
         opcao = input("Escolha uma opção: ")
         
         if opcao == "1":
@@ -192,6 +277,12 @@ def main():
             read_projects()
         elif opcao == "6":
             read_employees()
+        elif opcao == "7":
+            update_department()
+        elif opcao == "8":
+            update_project()
+        elif opcao == "9":
+            update_employee()
         else:
             print("Opção inválida.")
 
